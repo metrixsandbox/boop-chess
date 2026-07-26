@@ -19,7 +19,8 @@ export default defineConfig({
         theme_color: "#241a12",
         background_color: "#171310",
         display: "standalone",
-        orientation: "portrait",
+        // "portrait" locked installed iPads out of the landscape layout
+        orientation: "any",
         icons: [
           { src: "icon-192.png", sizes: "192x192", type: "image/png", purpose: "any maskable" },
           { src: "icon-512.png", sizes: "512x512", type: "image/png", purpose: "any maskable" }

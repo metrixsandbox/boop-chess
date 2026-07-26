@@ -2942,14 +2942,22 @@ const CSS = `
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;0,700;1,600&family=Nunito:wght@600;700;800&display=swap');
 
 .wc-app{
-  min-height:100vh; margin:0 auto; padding:16px 12px 36px; max-width:560px;
+  /* content column width — media queries below scale this per device */
+  --wc-col:520px;
+  min-height:100vh; min-height:100dvh; width:100%; margin:0 auto; box-sizing:border-box;
+  /* viewport-fit=cover means the notch/home-indicator can overlap; keep clear of it */
+  padding:calc(16px + env(safe-area-inset-top)) calc(12px + env(safe-area-inset-right))
+          calc(36px + env(safe-area-inset-bottom)) calc(12px + env(safe-area-inset-left));
   background:
     radial-gradient(120% 90% at 50% 0%, #2b2016 0%, #1d1510 45%, #120c08 100%);
   font-family:'Nunito', system-ui, sans-serif;
   color:#E9DCC3; display:flex; flex-direction:column; align-items:center;
   -webkit-tap-highlight-color:transparent; user-select:none;
+  -webkit-user-select:none; -webkit-touch-callout:none;
 }
-.wc-head{width:100%; max-width:520px; display:flex; align-items:baseline; justify-content:space-between;}
+/* iOS ignores user-scalable=no — kill the double-tap zoom on controls instead */
+.wc-btn, .wc-icon, .wc-lvl, .wc-style, .wc-av, .wc-food, .wc-profile{touch-action:manipulation;}
+.wc-head{width:100%; max-width:var(--wc-col); display:flex; align-items:baseline; justify-content:space-between;}
 .wc-title{
   font-family:'Fraunces', Georgia, serif; font-weight:700; font-size:26px;
   margin:0; color:#EFE3C8; letter-spacing:.3px;
@@ -2965,7 +2973,7 @@ const CSS = `
 .wc-icon:active{background:rgba(201,162,75,.15);}
 
 .wc-banner{
-  width:100%; max-width:520px; box-sizing:border-box; text-align:center;
+  width:100%; max-width:var(--wc-col); box-sizing:border-box; text-align:center;
   background:#241A12; border:1.5px solid #5A452C; border-radius:12px;
   padding:9px 12px; font-weight:700; font-size:14.5px; margin:12px 0 6px;
   letter-spacing:.2px;
@@ -2973,11 +2981,14 @@ const CSS = `
 .wc-banner.danger{border-color:#B0492F; color:#F0C0AE;}
 .wc-banner.final{border-color:#C9A24B; color:#EFDDA8;}
 
-.wc-traytags{width:100%; max-width:520px; display:flex; justify-content:space-between;
+.wc-traytags{width:100%; max-width:var(--wc-col); display:flex; justify-content:space-between;
   font-size:11.5px; font-weight:700; color:#9A8668; padding:0 4px 8px; letter-spacing:.4px;}
 
 .wc-stage{
-  width:100%; max-width:520px; height:min(70vh, 640px);
+  width:100%; max-width:var(--wc-col);
+  height:min(70vh, 640px);
+  /* dvh so the board doesn't jump when Safari's toolbars slide away */
+  height:min(var(--wc-stage-h, 70dvh), var(--wc-stage-max, 640px));
   border:2px solid #5A452C; border-radius:18px; overflow:hidden;
   box-shadow:0 18px 40px rgba(0,0,0,.55), inset 0 0 0 1px rgba(201,162,75,.15);
   background:#171310;
@@ -2986,7 +2997,7 @@ const CSS = `
 
 .wc-hint{font-size:11px; font-weight:600; color:#8A7458; margin-top:9px; text-align:center; letter-spacing:.3px;}
 
-.wc-controls{display:flex; gap:8px; margin-top:12px; width:100%; max-width:520px;}
+.wc-controls{display:flex; gap:8px; margin-top:12px; width:100%; max-width:var(--wc-col);}
 .wc-btn{
   flex:1; font-family:inherit; font-weight:800; font-size:13.5px; color:#E9DCC3;
   background:#2A1F15; border:1.5px solid #5A452C; border-radius:12px; padding:11px 6px;
@@ -2996,20 +3007,20 @@ const CSS = `
 .wc-btn:active{transform:translateY(1px); filter:brightness(1.08);}
 .wc-btn:disabled{opacity:.4; cursor:default;}
 
-.wc-foot{width:100%; max-width:520px; text-align:center; font-size:12px; font-weight:600;
+.wc-foot{width:100%; max-width:var(--wc-col); text-align:center; font-size:12px; font-weight:600;
   color:#9A8668; margin-top:12px; line-height:1.6;}
 
-.wc-level{width:100%; max-width:520px; display:flex; align-items:center; justify-content:space-between;
+.wc-level{width:100%; max-width:var(--wc-col); display:flex; align-items:center; justify-content:space-between;
   flex-wrap:wrap; gap:6px; margin-top:12px; font-size:12px; font-weight:700; color:#9A8668; letter-spacing:.4px;}
 .wc-levelbtns{display:flex; gap:5px; flex-wrap:wrap;}
 .wc-lvl{width:32px; height:32px; border-radius:9px; border:1.5px solid #5A452C; background:#241A12;
   color:#B9A47F; font-family:inherit; font-weight:800; font-size:13px; cursor:pointer; padding:0;}
 .wc-lvl.on{background:#C9A24B; border-color:#C9A24B; color:#231A10;}
 .wc-lvl:active{transform:translateY(1px);}
-.wc-engine{width:100%; max-width:520px; text-align:center; font-size:10.5px; font-weight:700;
+.wc-engine{width:100%; max-width:var(--wc-col); text-align:center; font-size:10.5px; font-weight:700;
   color:#6E5C42; margin-top:8px; letter-spacing:.6px; text-transform:uppercase;}
 
-.wc-stagewrap{position:relative; width:100%; max-width:520px;}
+.wc-stagewrap{position:relative; width:100%; max-width:var(--wc-col);}
 .wc-stagewrap .wc-stage{max-width:none;}
 .wc-credits{position:absolute; inset:0; border-radius:18px; overflow:hidden; z-index:5; cursor:pointer;
   background:linear-gradient(rgba(16,10,6,.45), rgba(16,10,6,.88));}
@@ -3035,7 +3046,7 @@ const CSS = `
 .wc-style.locked{opacity:.45; cursor:default;}
 .wc-style:active:not(:disabled){transform:translateY(1px);}
 
-.wc-profile{width:100%; max-width:520px; box-sizing:border-box; display:flex; align-items:center; gap:8px;
+.wc-profile{width:100%; max-width:var(--wc-col); box-sizing:border-box; display:flex; align-items:center; gap:8px;
   margin-top:10px; background:#241A12; border:1.5px solid #5A452C; border-radius:12px; padding:7px 12px; cursor:pointer;}
 .wc-profav{font-size:20px; line-height:1;}
 .wc-profname{font-weight:800; font-size:14px; color:#E9DCC3; flex:1; text-align:left;}
@@ -3079,7 +3090,7 @@ const CSS = `
 .wc-blog{position:absolute; left:4%; right:4%; bottom:4%; background:#241A12; border:1.5px solid #C9A24B;
   border-radius:10px; padding:10px 14px; font-weight:800; font-size:14px; color:#EFE3C8; min-height:22px;}
 
-.wc-hungerrow{width:100%; max-width:520px; display:flex; align-items:center; gap:8px; margin-top:10px;
+.wc-hungerrow{width:100%; max-width:var(--wc-col); display:flex; align-items:center; gap:8px; margin-top:10px;
   font-size:11px; font-weight:800; color:#9A8668;}
 .wc-hlabel{letter-spacing:.8px; text-transform:uppercase;}
 .wc-hungerbar{flex:1; height:12px; background:#171008; border:1.5px solid #5A452C; border-radius:8px; overflow:hidden;}
@@ -3092,9 +3103,64 @@ const CSS = `
 .wc-food.rotten{filter:hue-rotate(70deg) saturate(1.4);}
 .wc-food:disabled{opacity:.35; cursor:default;}
 
-.wc-online{width:100%; max-width:520px; display:flex; gap:8px; margin-top:10px; align-items:stretch;}
+.wc-online{width:100%; max-width:var(--wc-col); display:flex; gap:8px; margin-top:10px; align-items:stretch;}
 .wc-online .wc-btn{flex:1;}
 .wc-code{flex:0 0 92px; margin-bottom:0; letter-spacing:4px; text-transform:uppercase; font-size:16px;}
-.wc-onlinemsg{width:100%; max-width:520px; text-align:center; font-size:12px; font-weight:800;
+.wc-onlinemsg{width:100%; max-width:var(--wc-col); text-align:center; font-size:12px; font-weight:800;
   color:#C9A24B; margin-top:8px; letter-spacing:.4px;}
+
+/* ---- tablets, portrait (iPad mini 744, 10.2" 810, Air/Pro11 834, Pro12.9 1024) ----
+   The phone layout stranded a 520px column in the middle of the screen. Widen the
+   column and let the board take the space it earns. */
+@media (min-width:700px){
+  /* 62dvh, not 70 — at 70 the board pushes the controls off a 10.2" screen */
+  .wc-app{--wc-col:700px; --wc-stage-h:62dvh; --wc-stage-max:760px;
+          padding-top:calc(24px + env(safe-area-inset-top));}
+  .wc-title{font-size:34px;}
+  .wc-ed{font-size:17px;}
+  .wc-banner{font-size:17px; padding:12px 16px;}
+  .wc-btn{font-size:16px; padding:14px 10px; border-radius:14px;}
+  .wc-icon{font-size:19px; padding:9px 15px;}
+  .wc-hint{font-size:13px;}
+  .wc-foot{font-size:14px;}
+  .wc-level{font-size:14px;}
+  .wc-lvl{width:40px; height:40px; font-size:16px; border-radius:11px;}
+  .wc-style{height:40px; font-size:13.5px; padding:0 14px;}
+  .wc-profname{font-size:17px;} .wc-profpts{font-size:16px;} .wc-profav{font-size:24px;}
+  .wc-traytags{font-size:13px;}
+  .wc-hungerrow{font-size:13px;}
+  .wc-hungerbar{height:15px;}
+  .wc-food{font-size:22px; padding:8px 12px;}
+  .wc-engine{font-size:12px;}
+  .wc-modalcard{max-width:420px; padding:26px;}
+  .wc-modaltitle{font-size:27px;}
+  .wc-av{width:54px; height:54px; font-size:29px;}
+  .wc-nameinput{font-size:17px; padding:12px 14px;}
+  .wc-bname{font-size:17px;} .wc-blog{font-size:17px;} .wc-bglyph{font-size:96px;}
+}
+
+/* ---- tablets, landscape ----
+   A tall stack wastes the whole right half of the screen and pushes the controls
+   below the fold. Board on the left, everything else in a sidebar. */
+@media (min-width:1000px) and (orientation:landscape){
+  .wc-app{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) minmax(300px,400px);
+    column-gap:24px;
+    align-content:start; justify-items:center;
+    max-width:1600px;
+    --wc-col:100%;
+    --wc-stage-h:calc(100dvh - 190px);
+    --wc-stage-max:900px;
+  }
+  /* default every child to the sidebar, then pull the board back out to column 1 */
+  .wc-app > *{grid-column:2; width:100%;}
+  .wc-head{grid-column:1 / -1; max-width:none;}
+  .wc-stagewrap{grid-column:1; grid-row:2 / span 30; align-self:start;}
+  .wc-modal{grid-column:1 / -1;}          /* position:fixed, placement is cosmetic */
+  .wc-head + *{margin-top:10px;}
+  .wc-hint{order:99; font-size:12px; line-height:1.5; text-align:left;}
+  .wc-controls{flex-wrap:wrap;}
+  .wc-foot{margin-top:14px;}
+}
 `;
