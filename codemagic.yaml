@@ -1,0 +1,42 @@
+# Codemagic pipeline: builds, signs, and uploads to TestFlight — no Mac needed.
+# Matches Codemagic's documented Capacitor iOS flow; if their onboarding wizard
+# offers to generate a workflow for you, comparing against this is fine.
+#
+# Before first run:
+#  1. In Codemagic: Teams > Integrations > Developer Portal — add your
+#     App Store Connect API key (Issuer ID, Key ID, upload the .p8) and name it
+#     to match `app_store_connect: appstore_key` below.
+#  2. Replace BUNDLE_ID with your real reverse-DNS id (must match
+#     capacitor.config.ts and the App ID you registered).
+workflows:
+  ios-testflight:
+    name: iOS → TestFlight
+    max_build_duration: 60
+    integrations:
+      app_store_connect: appstore_key
+    environment:
+      xcode: latest
+      node: 20
+      vars:
+        BUNDLE_ID: "com.CHANGEME.boopchess"
+    scripts:
+      - name: Install and build web app
+        script: |
+          npm ci
+          npm run build
+      - name: Capacitor sync
+        script: npx cap sync ios
+      - name: Fetch signing files and set up keychain
+        script: |
+          app-store-connect fetch-signing-files "$BUNDLE_ID" --type IOS_APP_STORE --create
+          keychain initialize
+          keychain add-certificates
+          xcode-project use-profiles
+      - name: Build IPA
+        script: xcode-project build-ipa --workspace ios/App/App.xcworkspace --scheme App
+    artifacts:
+      - build/ios/ipa/*.ipa
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
